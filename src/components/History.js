@@ -8,10 +8,14 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import AppLoading from 'expo-app-loading';
-import UdaciFitnessCalendar from 'udacifitness-calendar';
+import { Agenda } from 'react-native-calendars';
 import { receiveEntries, addEntry } from '../store/actions/entries.action';
 
-import { timeToString, getDailyReminderValue } from '../utils/helpers';
+import {
+  formatDate,
+  getDailyReminderValue,
+  timeToString,
+} from '../utils/helpers';
 import { fetchCalenderResults } from '../utils/api';
 import { white } from '../utils/colors';
 
@@ -40,33 +44,55 @@ export function History(props) {
     fetchHistory();
   }, [fetchHistory]);
 
-  const renderItem = ({ today, ...metrics }, formattedDate, key) => (
-    <View style={styles.item}>
-      {today ? (
-        <View>
-          <DateHeader date={formattedDate} />
-          <Text style={styles.noDataText}>{today}</Text>
-        </View>
-      ) : (
-        <TouchableOpacity onPress={() => console.log('Pressed!')}>
-          <MetricCard date={formattedDate} metrics={metrics} />
-        </TouchableOpacity>
-      )}
-    </View>
-  );
+  const renderItem = (item) => {
+    const { entry, formattedDate, key } = item;
+    const { today, ...metrics } = entry;
+    return (
+      <View style={styles.item} key={key}>
+        {today ? (
+          <View>
+            <DateHeader date={formattedDate} />
+            <Text style={styles.noDataText}>{today}</Text>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={() => console.log('Pressed!')}>
+            <MetricCard date={formattedDate} metrics={metrics} />
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
 
-  const renderEmptyDate = (formattedDate) => (
-    <View style={styles.item}>
-      <DateHeader date={formattedDate} />
-      <Text style={styles.noDataText}>You didn't log data on this day</Text>
-    </View>
-  );
+  const renderEmptyDate = (date) => {
+    const formattedDate = formatDate(date[0]);
+    return (
+      <View style={styles.item}>
+        <DateHeader date={formattedDate} />
+        <Text style={styles.noDataText}>You didn't log data on this day</Text>
+      </View>
+    );
+  };
 
   if (isReady) {
+    // ! udacifitness-calendar is oudated
+    // react-native-calendars require diff prop data than udacifitness-calendar
+    // Need to convert old udaci entries data for react-native-calendars'
+    // Agenda component
+    const agendaEntries = {};
+    for (const [key, value] of Object.entries(entries)) {
+      if (value) {
+        const entry = {
+          entry: value,
+          formattedDate: formatDate(new Date(key)),
+          key: key,
+        };
+        agendaEntries[key] = [entry];
+      } else agendaEntries[key] = [];
+    }
+
     return (
-      <UdaciFitnessCalendar
-        style={{ flex: 1 }}
-        items={entries}
+      <Agenda
+        items={agendaEntries}
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
       />
