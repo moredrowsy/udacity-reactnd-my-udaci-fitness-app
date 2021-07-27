@@ -1,16 +1,96 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import store from '../store';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import { purple, white } from '../utils/colors';
+import UdaciStatusBar from './UdaciStatusBar';
 import AddEntry from './AddEntry';
 import History from './History';
+import EntryDetails from './EntryDetails';
+
+const Stack = createStackNavigator();
+const Tabs = createBottomTabNavigator();
+
+const TabsNavigator = () => (
+  <Tabs.Navigator
+    tabBarOptions={{
+      activeTintColor: Platform.OS === 'ios' ? purple : white,
+      style: {
+        height: 56,
+        backgroundColor: Platform.OS === 'ios' ? white : purple,
+        shadowColor: 'rgba(0, 0, 0, 0.24)',
+        shadowOffset: {
+          width: 0,
+          height: 3,
+        },
+        shadowRadius: 6,
+        shadowOpacity: 1,
+      },
+    }}
+  >
+    <Tabs.Screen
+      name='History'
+      component={History}
+      options={{
+        title: 'History',
+        tabBarIcon: ({ color }) => (
+          <Ionicons name='ios-bookmarks' color={color} size={30} />
+        ),
+      }}
+    />
+    <Tabs.Screen
+      name='AddEntry'
+      component={AddEntry}
+      options={{
+        title: 'Add Entry',
+        tabBarIcon: ({ color }) => (
+          <FontAwesome name='plus-square' color={color} size={30} />
+        ),
+      }}
+    />
+  </Tabs.Navigator>
+);
+
+const StackNavigator = () => (
+  <Stack.Navigator
+    screenOptions={{
+      headerTitleAlign: 'center',
+      headerTintColor: white,
+      headerStyle: {
+        backgroundColor: purple,
+      },
+    }}
+  >
+    <Stack.Screen
+      name='History'
+      component={TabsNavigator}
+      options={{ title: 'History', headerShown: false }}
+    />
+    <Stack.Screen
+      name='EntryDetails'
+      component={EntryDetails}
+      options={{
+        title: 'Entry Details',
+        headerShown: true,
+      }}
+    />
+  </Stack.Navigator>
+);
 
 export default function App() {
   return (
     <Provider store={store}>
       <View style={{ flex: 1 }}>
-        <View style={{ height: 20 }} />
-        <History />
+        <UdaciStatusBar backgroundColor={purple} barStyle='light-content' />
+        <NavigationContainer>
+          <StackNavigator />
+        </NavigationContainer>
       </View>
     </Provider>
   );

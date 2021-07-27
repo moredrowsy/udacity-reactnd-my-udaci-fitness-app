@@ -161,5 +161,7 @@ export function formatDate(date) {
     'November',
     'December',
   ];
-  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  return `${
+    months[date.getUTCMonth()]
+  } ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
 }

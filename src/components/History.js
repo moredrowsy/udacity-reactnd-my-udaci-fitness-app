@@ -17,13 +17,13 @@ import {
   timeToString,
 } from '../utils/helpers';
 import { fetchCalenderResults } from '../utils/api';
-import { white } from '../utils/colors';
+import { purple, white } from '../utils/colors';
 
 import DateHeader from './DateHeader';
 import MetricCard from './MetricCard';
 
 export function History(props) {
-  const { dispatch, entries } = props;
+  const { dispatch, entries, navigation } = props;
   const [isReady, setIsReady] = useState(false);
 
   const fetchHistory = useCallback(async () => {
@@ -55,7 +55,13 @@ export function History(props) {
             <Text style={styles.noDataText}>{today}</Text>
           </View>
         ) : (
-          <TouchableOpacity onPress={() => console.log('Pressed!')}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.push('EntryDetails', {
+                entryId: key,
+              })
+            }
+          >
             <MetricCard date={formattedDate} metrics={metrics} />
           </TouchableOpacity>
         )}
@@ -78,6 +84,7 @@ export function History(props) {
     // react-native-calendars require diff prop data than udacifitness-calendar
     // Need to convert old udaci entries data for react-native-calendars'
     // Agenda component
+    // TODO: overhaul the original entries data to avoid this
     const agendaEntries = {};
     for (const [key, value] of Object.entries(entries)) {
       if (value) {
@@ -95,6 +102,23 @@ export function History(props) {
         items={agendaEntries}
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
+        theme={{
+          agendaTodayColor: purple,
+          agendaKnobColor: purple,
+          calendarBackground: white,
+          selectedDayBackgroundColor: purple,
+          selectedDayTextColor: white,
+          todayTextColor: purple,
+          dotColor: purple,
+          monthTextColor: purple,
+          indicatorColor: purple,
+          // Remove side bar day
+          'stylesheet.agenda.list': {
+            day: {
+              width: 0,
+            },
+          },
+        }}
       />
     );
   } else {
