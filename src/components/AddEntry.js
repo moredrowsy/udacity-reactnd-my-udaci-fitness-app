@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { CommonActions } from '@react-navigation/native';
 
 import { addEntry } from '../store/actions/entries.action';
 import {
@@ -25,7 +26,7 @@ const initialMetric = {
 };
 
 function AddEntry(props) {
-  const { alreadyLogged, dispatch } = props;
+  const { alreadyLogged, dispatch, navigation } = props;
   const [metrics, setMetrics] = useState(initialMetric);
   const metricMetaInfo = getMetricMetaInfo();
 
@@ -62,20 +63,28 @@ function AddEntry(props) {
     const key = timeToString();
     const entry = metrics;
 
-    // TODO: navigate to home, clear local notification
-
     submitEntry({ entry, key }); // Update remote db
     dispatch(addEntry({ [key]: entry })); // Update redux
     setMetrics(initialMetric); // Reset metrics
+
+    goHome();
   };
 
   const reset = () => {
     const key = timeToString();
 
-    // TODO: navigate to home
-
     removeEntry(key);
     dispatch(addEntry({ [key]: getDailyReminderValue() }));
+
+    goHome();
+  };
+
+  const goHome = () => {
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: 'History',
+      })
+    );
   };
 
   if (alreadyLogged) {

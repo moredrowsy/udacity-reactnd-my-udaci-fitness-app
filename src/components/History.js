@@ -99,9 +99,13 @@ export function History(props) {
 
     return (
       <Agenda
+        // BUG: last date in entries is not default selected
+        // Manually set default selected date from timeToString()
+        selected={timeToString()}
         items={agendaEntries}
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
+        showClosingKnob={true}
         theme={{
           agendaTodayColor: purple,
           agendaKnobColor: purple,
@@ -112,10 +116,14 @@ export function History(props) {
           dotColor: purple,
           monthTextColor: purple,
           indicatorColor: purple,
-          // Remove side bar day
           'stylesheet.agenda.list': {
+            // Remove side bar days
             day: {
-              width: 0,
+              display: 'none',
+            },
+            // Remove loading spinner status for non-loaded days
+            indicator: {
+              display: 'none',
             },
           },
         }}
