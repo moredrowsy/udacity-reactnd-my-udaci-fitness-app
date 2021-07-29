@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Animated,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,6 +18,7 @@ function Live() {
   const [status, setStatus] = useState(null);
   const [direction, setDirection] = useState('');
   const [locSubscription, setLocSubscription] = useState(null);
+  const bounce = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     askPersmission();
@@ -36,7 +38,7 @@ function Live() {
       setStatus(status);
 
       if (status === 'granted') {
-        setLocation();
+        await setLocation();
       }
     } else {
       setStatus('undetermined');
@@ -44,7 +46,7 @@ function Live() {
   }, []);
 
   const setLocation = useCallback(async () => {
-    const subscription = Location.watchPositionAsync(
+    const subscription = await Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.High,
         timeInterval: 1,
@@ -52,6 +54,21 @@ function Live() {
       },
       ({ coords }) => {
         const newDirection = calculateDirection(coords.heading);
+        if (newDirection !== direction) {
+          Animated.sequence([
+            Animated.timing(bounce, {
+              duration: 200,
+              toValue: 1.04,
+              useNativeDriver: true,
+            }),
+            Animated.spring(bounce, {
+              toValue: 1,
+              friction: 4,
+              useNativeDriver: true,
+            }),
+          ]).start();
+        }
+
         setCoords(coords);
         setDirection(newDirection);
       }
@@ -92,7 +109,11 @@ function Live() {
       <View style={styles.container}>
         <View style={styles.directionContainer}>
           <Text style={styles.header}>You're heading</Text>
-          <Text style={styles.direction}>{direction}</Text>
+          <Animated.Text
+            style={[styles.direction, { transform: [{ scale: bounce }] }]}
+          >
+            {direction}
+          </Animated.Text>
         </View>
         <View style={styles.metricContainer}>
           <View style={styles.metric}>
