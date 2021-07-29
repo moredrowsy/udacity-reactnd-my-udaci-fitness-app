@@ -9,6 +9,8 @@ import {
   getDailyReminderValue,
   getMetricMetaInfo,
   timeToString,
+  clearLocalNotification,
+  setLocalNotification,
 } from '../utils/helpers';
 import { purple, white } from '../utils/colors';
 import { submitEntry, removeEntry } from '../utils/api';
@@ -66,7 +68,7 @@ function AddEntry(props) {
     submitEntry({ entry, key }); // Update remote db
     dispatch(addEntry({ [key]: entry })); // Update redux
     setMetrics(initialMetric); // Reset metrics
-
+    clearLocalNotification().then(setLocalNotification);
     goHome();
   };
 

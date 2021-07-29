@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import store from '../store';
 import { Platform, View } from 'react-native';
+import * as Notifications from 'expo-notifications';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,6 +10,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { purple, white } from '../utils/colors';
+import { setLocalNotification } from '../utils/helpers';
 import AddEntry from './AddEntry';
 import EntryDetails from './EntryDetails';
 import History from './History';
@@ -95,6 +97,18 @@ const StackNavigator = () => (
 );
 
 export default function App() {
+  useEffect(() => {
+    // Determines how to handle incoming notifications while app is in foreground
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+      }),
+    });
+    setLocalNotification();
+  }, []);
+
   return (
     <Provider store={store}>
       <View style={{ flex: 1 }}>
