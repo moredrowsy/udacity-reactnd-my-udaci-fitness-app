@@ -10,7 +10,7 @@ This version of my project only uses functional components
 npm install
 ```
 
-## Run
+## Developement Run
 
 - Open mobile emulator
 
@@ -21,3 +21,25 @@ npm install
   ```
 
 - Press 'a' on terminal to open app on Android
+
+## Build
+
+- Build
+
+  iOS
+
+  ```bash
+  expo build:ios
+  ```
+
+  Android
+
+  ```bash
+  expo build:android
+  ```
+
+  Check Status
+
+  ```bash
+  expo build:status
+  ```
