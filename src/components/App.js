@@ -9,10 +9,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { purple, white } from '../utils/colors';
-import UdaciStatusBar from './UdaciStatusBar';
 import AddEntry from './AddEntry';
-import History from './History';
 import EntryDetails from './EntryDetails';
+import History from './History';
+import Live from './Live';
+import UdaciStatusBar from './UdaciStatusBar';
 
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
@@ -51,6 +52,16 @@ const TabsNavigator = () => (
         title: 'Add Entry',
         tabBarIcon: ({ color }) => (
           <FontAwesome name='plus-square' color={color} size={30} />
+        ),
+      }}
+    />
+    <Tabs.Screen
+      name='Live'
+      component={Live}
+      options={{
+        title: 'Live',
+        tabBarIcon: ({ color }) => (
+          <Ionicons name='ios-speedometer' color={color} size={30} />
         ),
       }}
     />
